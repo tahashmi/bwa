@@ -86,9 +86,199 @@ static void *process(void *shared, int step, void *_data)
 		return data;
 	} else if (step == 2) {
 		for (i = 0; i < data->n_seqs; ++i) {
-			if (data->seqs[i].sam) err_fputs(data->seqs[i].sam, stdout);
+			int qual_size = strlen(data->seqs[i].qual_ascii);
+			int seq_size = strlen(data->seqs[i].seq_ascii);
+			if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr1")==0) && (qual_size == 100) && (seq_size== 100)) {
+				//err_fputs(data->seqs[i].sam, stdout);
+				arrow_builders_append(1, data->seqs[i].name, data->seqs[i].flag, 1, data->seqs[i].beginPos,
+									  data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+									  data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+									  data->seqs[i].qual_ascii, data->seqs[i].tag);
+                //arrow_builders_append("FLAG",555,999,888,777, "A1B2C3",111,222,333, "SEQ","QUAL","TAGS");
+                counts1++;
+			}
+			else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr2")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(2, data->seqs[i].name, data->seqs[i].flag, 2, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts2++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr3")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(3, data->seqs[i].name, data->seqs[i].flag, 3, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts3++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr4")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(4, data->seqs[i].name, data->seqs[i].flag, 4, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts4++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr5")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(5, data->seqs[i].name, data->seqs[i].flag, 5, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts5++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr6")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(6, data->seqs[i].name, data->seqs[i].flag, 6, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts6++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr7")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(7, data->seqs[i].name, data->seqs[i].flag, 7, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts7++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr8")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(8, data->seqs[i].name, data->seqs[i].flag, 8, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts8++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr9")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(9, data->seqs[i].name, data->seqs[i].flag, 9, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts9++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr10")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(10, data->seqs[i].name, data->seqs[i].flag, 10, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts10++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr11")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(11, data->seqs[i].name, data->seqs[i].flag, 11, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts11++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr12")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(12, data->seqs[i].name, data->seqs[i].flag, 12, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts12++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr13")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(13, data->seqs[i].name, data->seqs[i].flag, 13, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts13++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr14")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(14, data->seqs[i].name, data->seqs[i].flag, 14, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts14++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr15")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(15, data->seqs[i].name, data->seqs[i].flag, 15, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts15++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr16")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(16, data->seqs[i].name, data->seqs[i].flag, 16, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts16++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr17")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(17, data->seqs[i].name, data->seqs[i].flag, 17, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts17++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr18")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(18, data->seqs[i].name, data->seqs[i].flag, 18, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts18++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr19")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(19, data->seqs[i].name, data->seqs[i].flag, 19, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts19++;
+            }
+	    else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr20")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(20, data->seqs[i].name, data->seqs[i].flag, 20, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts20++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr21")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(21, data->seqs[i].name, data->seqs[i].flag, 21, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts21++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr22")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(22, data->seqs[i].name, data->seqs[i].flag, 22, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                counts22++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chrX")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(23, data->seqs[i].name, data->seqs[i].flag, 23, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                countsX++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chrY")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(24, data->seqs[i].name, data->seqs[i].flag, 24, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                countsY++;
+            }
+            else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chrM")==0) && (qual_size == 100) && (seq_size== 100)) {
+                arrow_builders_append(25, data->seqs[i].name, data->seqs[i].flag, 25, data->seqs[i].beginPos,
+                                      data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
+                                      data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
+                                      data->seqs[i].qual_ascii, data->seqs[i].tag);
+                countsM++;
+            }
 			free(data->seqs[i].name); free(data->seqs[i].comment);
 			free(data->seqs[i].seq); free(data->seqs[i].qual); free(data->seqs[i].sam);
+
+			//free(data->seqs[i].flag);
+			free(data->seqs[i].refID);
+			//free(data->seqs[i].beginPos);
+			//free(data->seqs[i].mapQ);
+			free(data->seqs[i].cigar);
+			//free(data->seqs[i].rNextId);
+			//free(data->seqs[i].pNext);
+			//free(data->seqs[i].tLen);
+			free(data->seqs[i].seq_ascii);
+			free(data->seqs[i].qual_ascii);
+			free(data->seqs[i].tag);
 		}
 		free(data->seqs); free(data);
 		return 0;
