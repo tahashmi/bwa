@@ -4,7 +4,7 @@
 [![BioConda Install](https://img.shields.io/conda/dn/bioconda/bwa.svg?style=flag&label=BioConda%20install)](https://anaconda.org/bioconda/bwa)
 
 **Note: Apache Arrow Integration.**
-This forked repository contains some modifications to use in-memory Arrow data representation for SAM output from BWA-MEM. Instead of writing output to SAM ASCII file, SAM data is being written in-memory to be used in some other applications.
+This forked repository contains some modifications to use in-memory Arrow data representation for SAM output from BWA-MEM. Instead of writing output to SAM ASCII file, SAM data is being written in-memory in Plasma Objects to be used in some other applications.
 
 **Changes**
 
