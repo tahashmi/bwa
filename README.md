@@ -14,7 +14,7 @@ Makefile -> Following libs included. -larrow-glib -lplasma-glib -lglib-2.0 -lgob
 
 main.c -> Some Arrow tables/plasma objects creation functions like create_plasma_object() added.
 
-fastmap.c -> Step-2 in process() has been changed.
+fastmap.c -> Step-2 in process() has been changed. All individual data fields are being stored in Arrow RecordBatches.
 
 bwamem.c -> mem_aln2sam() is now filling a SAM data structure (for Arrow representation) instead of creating a SAM data string to be written in SAM file.
 
