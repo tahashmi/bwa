@@ -1,3 +1,8 @@
+#include <arrow-glib/arrow-glib.h>
+#include <plasma-glib/plasma-glib.h>
+
+#include <stdint-gcc.h>
+
 #include <stdio.h>
 #include <string.h>
 #include "kstring.h"
@@ -6,6 +11,14 @@
 #ifndef PACKAGE_VERSION
 #define PACKAGE_VERSION "0.7.17-r1198-dirty"
 #endif
+
+#define ASCII_START 32
+#define ASCII_END 126
+
+typedef char   gchar;
+extern int64_t counts1,counts2,counts3,counts4,counts5,counts5,counts6,counts7,counts8,counts9,counts10,counts11,
+        counts12,counts13,counts14,counts15,counts15,counts16,counts17,counts18,counts19,counts20,counts21,counts22,
+        countsX,countsY,countsM;
 
 int bwa_fa2pac(int argc, char *argv[]);
 int bwa_pac2bwt(int argc, char *argv[]);
@@ -58,12 +71,105 @@ static int usage()
 	return 1;
 }
 
+/////////////////////////////////////////////////////
+//		Arrow-Functionality                //
+/////////////////////////////////////////////////////
+char* generateRandomString(int size) {
+    int i;
+    char *res = malloc(size + 1);
+    for(i = 0; i < size; i++) {
+        res[i] = (char) (rand()%(ASCII_END-ASCII_START))+ASCII_START;
+    }
+    res[size + 1] = '\0';
+    return res;
+}
+
+void create_plasma_object(GArrowRecordBatch *batch_genomics)
+{
+    guint8 id_arr[20];
+    char objID_file[] = "objID.txt";
+    memcpy(id_arr, generateRandomString(20),20);
+
+    FILE *fOut;
+    fOut = fopen(objID_file, "a");
+    fputs(id_arr, fOut);
+    fputc('\n', fOut);
+    fclose(fOut);
+
+    gboolean success = TRUE;
+    GError *error = NULL;
+
+    GPlasmaClient *gPlasmaClient;
+    GPlasmaObjectID *object_id;
+    GPlasmaClientCreateOptions *create_options;
+    GPlasmaClientOptions *gplasmaClient_options;
+    GPlasmaCreatedObject *Object;
+    GArrowBuffer *arrowBuffer;
+
+    arrowBuffer = GSerializeRecordBatch(batch_genomics);
+    gint64 size = garrow_buffer_get_size(arrowBuffer);
+
+    //g_print("obj_id: %s\n", id_arr);
+    fprintf(stderr, "[%s] obj_id: %s , size: %ld \n", __func__, id_arr, size);
+
+    create_options = gplasma_client_create_options_new();
+    gplasmaClient_options = gplasma_client_options_new();
+    gPlasmaClient = gplasma_client_new("/tmp/store0",gplasmaClient_options, &error);
+    object_id = gplasma_object_id_new(id_arr, 20, &error);
+
+    {
+        /* It should be guint8 instead of gchar. We use gchar here
+           just for convenient. */
+        guint8 metadata[] = "metadata";
+        gplasma_client_create_options_set_metadata(create_options, (const guint8 *)metadata, sizeof(metadata));
+    }
+    Object = gplasma_client_create(gPlasmaClient, object_id, size, create_options, &error);
+
+    g_object_unref(create_options);
+    {
+        GArrowBuffer *data;
+        g_object_get(Object, "data", &data, NULL);
+        //garrow_mutable_buffer_set_data(GARROW_MUTABLE_BUFFER(data),0,arrowBuffer,&error);
+        garrow_mutable_buffer_set_data(GARROW_MUTABLE_BUFFER(data),0, garrow_buffer_get_databytes(arrowBuffer),size,&error);
+        g_object_unref(data);
+    }
+
+    gplasma_created_object_seal(Object, &error);
+    g_object_unref(Object);
+    gplasma_client_disconnect(gPlasmaClient, &error);
+    g_object_unref(gPlasmaClient);
+    g_object_unref(object_id);
+}
+
+void arrow_plasma_create(int id, long size) {
+    GArrowRecordBatch * rb_genomics;
+    rb_genomics=arrow_builders_finish(id, size);
+    {
+        //g_print("%s", garrow_record_batch_to_string(rb_genomics, NULL));
+        //fprintf(stderr, "[%s] Arrow: %s\n", __func__, garrow_record_batch_to_string(rb_genomics, NULL));
+    }
+    create_plasma_object(rb_genomics);
+    g_object_unref(rb_genomics);
+}
+int exist(const char *name)
+{
+    struct stat   buffer;
+    return (stat (name, &buffer) == 0);
+}
+////////////////////////END////////////////////////////
+
 int main(int argc, char *argv[])
 {
 	extern char *bwa_pg;
 	int i, ret;
 	double t_real;
 	kstring_t pg = {0,0,0};
+	
+	char file[] = "objID.txt";
+        if(exist(file))
+          remove(file);
+        arrow_builders_start();
+	
 	t_real = realtime();
 	ksprintf(&pg, "@PG\tID:bwa\tPN:bwa\tVN:%s\tCL:%s", PACKAGE_VERSION, argv[0]);
 	for (i = 1; i < argc; ++i) ksprintf(&pg, " %s", argv[i]);
@@ -100,5 +206,32 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "\n[%s] Real time: %.3f sec; CPU: %.3f sec\n", __func__, realtime() - t_real, cputime());
 	}
 	free(bwa_pg);
+	
+	arrow_plasma_create(1,counts1); //Chrms
+	arrow_plasma_create(2,counts2);
+	arrow_plasma_create(3,counts3);
+	arrow_plasma_create(4,counts4);
+	arrow_plasma_create(5,counts5);
+	arrow_plasma_create(6,counts6);
+	arrow_plasma_create(7,counts7);
+	arrow_plasma_create(8,counts8);
+	arrow_plasma_create(9,counts9);
+	arrow_plasma_create(10,counts10);
+	arrow_plasma_create(11,counts11);
+	arrow_plasma_create(12,counts12);
+	arrow_plasma_create(13,counts13);
+	arrow_plasma_create(14,counts14);
+	arrow_plasma_create(15,counts15);
+	arrow_plasma_create(16,counts16);
+	arrow_plasma_create(17,counts17);
+	arrow_plasma_create(18,counts18);
+	arrow_plasma_create(19,counts19);
+	arrow_plasma_create(20,counts20);
+	arrow_plasma_create(21,counts21);
+	arrow_plasma_create(22,counts22);
+	arrow_plasma_create(23,countsX);
+	arrow_plasma_create(24,countsY);
+	arrow_plasma_create(25,countsM);
+	
 	return ret;
 }
