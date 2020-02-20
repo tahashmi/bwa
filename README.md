@@ -6,7 +6,7 @@
 **Note: Apache Arrow Integration.**
 This forked repository contains some modifications to use in-memory Arrow data representation for SAM output from BWA-MEM. Instead of writing output to SAM ASCII file, SAM data is being written in-memory in Plasma Objects to be used in some other applications. More details can be found in our paper: 
 
-* [ArrowSAM: In-Memory Genomics Data Processing through Apache Arrow Framework] (https://www.biorxiv.org/content/10.1101/741843v2)
+* ArrowSAM: In-Memory Genomics Data Processing through Apache Arrow Framework (https://www.biorxiv.org/content/10.1101/741843v2)
 
 **Changes**
 
