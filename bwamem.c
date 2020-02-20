@@ -7,9 +7,11 @@
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
-
 #include "kstring.h"
 #include "bwamem.h"
+
+#include <arrow-glib/arrow-glib.h>
+
 #include "bntseq.h"
 #include "ksw.h"
 #include "kvec.h"
@@ -19,6 +21,8 @@
 #ifdef USE_MALLOC_WRAPPERS
 #  include "malloc_wrap.h"
 #endif
+
+typedef char   gchar;
 
 /* Theory on probability and scoring *ungapped* alignment
  *
@@ -839,115 +843,212 @@ void mem_aln2sam(const mem_opt_t *opt, const bntseq_t *bns, kstring_t *str, bseq
 	p->flag |= p->is_rev? 0x10 : 0; // is on the reverse strand
 	p->flag |= m && m->is_rev? 0x20 : 0; // is mate on the reverse strand
 
+	kstring_t str1;
+    str1.l = str1.m = 0; str1.s = 0;
+
 	// print up to CIGAR
 	l_name = strlen(s->name);
 	ks_resize(str, str->l + s->l_seq + l_name + (s->qual? s->l_seq : 0) + 20);
-	kputsn(s->name, l_name, str); kputc('\t', str); // QNAME
-	kputw((p->flag&0xffff) | (p->flag&0x10000? 0x100 : 0), str); kputc('\t', str); // FLAG
+	//kputsn(s->name, l_name, str); //s->name (1)
+	//kputc('\t', str); // QNAME
+	//kputw((p->flag&0xffff) | (p->flag&0x10000? 0x100 : 0), str); //(p->flag&0xffff) | (p->flag&0x10000? 0x100 : 0) (2)
+	//kputc('\t', str); // FLAG
+	s->flag = (p->flag&0xffff) | (p->flag&0x10000? 0x100 : 0);
 	if (p->rid >= 0) { // with coordinate
-		kputs(bns->anns[p->rid].name, str); kputc('\t', str); // RNAME
-		kputl(p->pos + 1, str); kputc('\t', str); // POS
-		kputw(p->mapq, str); kputc('\t', str); // MAPQ
-		add_cigar(opt, p, str, which);
-	} else kputsn("*\t0\t0\t*", 7, str); // without coordinte
-	kputc('\t', str);
+		//kputs(bns->anns[p->rid].name, str); kputc('\t', str); // RNAME    bns->anns[p->rid].name (3)
+
+        s->refID = malloc(strlen(bns->anns[p->rid].name)+1);
+		strcpy(s->refID, bns->anns[p->rid].name);
+ 		//s->refID = bns->anns[p->rid].name;
+		//kputl(p->pos + 1, str); kputc('\t', str); // POS    p->pos + 1 (4)
+		s->beginPos = p->pos + 1;
+
+		//kputw(p->mapq, str); kputc('\t', str); // MAPQ      p->mapq (5)
+        s->mapQ = p->mapq;
+
+        //s->cigar = (char *) malloc(p->n_cigar+1);
+        s->cigar = add_cigar(opt, p, &str1, which); // ...(6)
+        //s->cigar[p->n_cigar] = '\0';
+	} else {
+	    //kputsn("*\t0\t0\t*", 7, str);
+        s->cigar=malloc(2);
+        s->cigar[0] = '*';
+        s->cigar[1] = '\0';
+
+        s->refID=malloc(2);
+        s->refID[0] = '*';
+        s->refID[1] = '\0';
+
+	    s->rID = -1;
+	    s->beginPos = 0;
+	    s->mapQ = 0;
+	}// without coordinte
+	//kputc('\t', str);
 
 	// print the mate position if applicable
 	if (m && m->rid >= 0) {
-		if (p->rid == m->rid) kputc('=', str);
-		else kputs(bns->anns[m->rid].name, str);
-		kputc('\t', str);
-		kputl(m->pos + 1, str); kputc('\t', str);
+		if (p->rid == m->rid) {//kputc('=', str);
+		s->rNextId=0;} // ...(6)
+		//else kputs(bns->anns[m->rid].name, str);
+		//kputc('\t', str);
+		//kputl(m->pos + 1, str); kputc('\t', str);
+		s->pNext=m->pos + 1; // ...(7)
 		if (p->rid == m->rid) {
 			int64_t p0 = p->pos + (p->is_rev? get_rlen(p->n_cigar, p->cigar) - 1 : 0);
 			int64_t p1 = m->pos + (m->is_rev? get_rlen(m->n_cigar, m->cigar) - 1 : 0);
-			if (m->n_cigar == 0 || p->n_cigar == 0) kputc('0', str);
-			else kputl(-(p0 - p1 + (p0 > p1? 1 : p0 < p1? -1 : 0)), str);
-		} else kputc('0', str);
-	} else kputsn("*\t0\t0", 5, str);
-	kputc('\t', str);
+			if (m->n_cigar == 0 || p->n_cigar == 0) {//kputc('0', str);
+			s->tLen = 0;}
+			else {//kputl(-(p0 - p1 + (p0 > p1? 1 : p0 < p1? -1 : 0)), str);
+			s->tLen=-(p0 - p1 + (p0 > p1? 1 : p0 < p1? -1 : 0));} // ...(8)
+		} else {//kputc('0', str);
+		s->tLen = 0;}
+	} else {//kputsn("*\t0\t0", 5, str);
+        s->rNextId=-1;
+        s->pNext= 0;
+        s->tLen = 0;}
+	//kputc('\t', str);
+
+    //gchar *seq_pass;
+    //gchar *qual_pass;
 
 	// print SEQ and QUAL
 	if (p->flag & 0x100) { // for secondary alignments, don't write SEQ and QUAL
-		kputsn("*\t*", 3, str);
+		//kputsn("*\t*", 3, str);
+		s->seq_ascii=malloc(2);
+		s->seq_ascii[0] = '*';
+		s->seq_ascii[1] = '\0';
+
+		s->qual_ascii=malloc(2);
+        s->qual_ascii[0] = '*';
+		s->qual_ascii[1] = '\0';
+
 	} else if (!p->is_rev) { // the forward strand
 		int i, qb = 0, qe = s->l_seq;
 		if (p->n_cigar && which && !(opt->flag&MEM_F_SOFTCLIP) && !p->is_alt) { // have cigar && not the primary alignment && not softclip all
 			if ((p->cigar[0]&0xf) == 4 || (p->cigar[0]&0xf) == 3) qb += p->cigar[0]>>4;
 			if ((p->cigar[p->n_cigar-1]&0xf) == 4 || (p->cigar[p->n_cigar-1]&0xf) == 3) qe -= p->cigar[p->n_cigar-1]>>4;
 		}
-		ks_resize(str, str->l + (qe - qb) + 1);
-		for (i = qb; i < qe; ++i) str->s[str->l++] = "ACGTN"[(int)s->seq[i]];
-		kputc('\t', str);
+		//ks_resize(str, str->l + (qe - qb) + 1);
+        s->seq_ascii=malloc(qe + 1);
+		for (i = qb; i < qe; ++i){
+            //str->s[str->l++] = "ACGTN"[(int)s->seq[i]]; // ...(10)
+            s->seq_ascii[i] = "ACGTN"[(int)s->seq[i]];
+		}
+        s->seq_ascii[qe] = '\0';
+
+
+		//kputc('\t', str);
 		if (s->qual) { // printf qual
-			ks_resize(str, str->l + (qe - qb) + 1);
-			for (i = qb; i < qe; ++i) str->s[str->l++] = s->qual[i];
-			str->s[str->l] = 0;
-		} else kputc('*', str);
+			s->qual_ascii=malloc(qe + 1);
+			//ks_resize(str, str->l + (qe - qb) + 1);
+			for (i = qb; i < qe; ++i){
+			    //str->s[str->l++] = s->qual[i]; // ...(11)
+				s->qual_ascii[i] = s->qual[i];
+			}
+			//str->s[str->l] = 0;
+			s->qual_ascii[qe] = 0;
+		} else {//kputc('*', str);
+			s->qual_ascii=malloc(2);
+			s->qual_ascii[0] = '*';
+			s->qual_ascii[1] = '\0';
+		}
 	} else { // the reverse strand
 		int i, qb = 0, qe = s->l_seq;
 		if (p->n_cigar && which && !(opt->flag&MEM_F_SOFTCLIP) && !p->is_alt) {
 			if ((p->cigar[0]&0xf) == 4 || (p->cigar[0]&0xf) == 3) qe -= p->cigar[0]>>4;
 			if ((p->cigar[p->n_cigar-1]&0xf) == 4 || (p->cigar[p->n_cigar-1]&0xf) == 3) qb += p->cigar[p->n_cigar-1]>>4;
 		}
-		ks_resize(str, str->l + (qe - qb) + 1);
-		for (i = qe-1; i >= qb; --i) str->s[str->l++] = "TGCAN"[(int)s->seq[i]];
-		kputc('\t', str);
+		//ks_resize(str, str->l + (qe - qb) + 1);
+		s->seq_ascii=malloc(qe + 1);
+		for (i = qe-1; i >= qb; --i){
+		    //str->s[str->l++] = "TGCAN"[(int)s->seq[i]];
+			s->seq_ascii[i] = "TGCAN"[(int)s->seq[i]];
+		}
+		    s->seq_ascii[qe]= '\0';
+		//kputc('\t', str);
 		if (s->qual) { // printf qual
-			ks_resize(str, str->l + (qe - qb) + 1);
-			for (i = qe-1; i >= qb; --i) str->s[str->l++] = s->qual[i];
-			str->s[str->l] = 0;
-		} else kputc('*', str);
+			//ks_resize(str, str->l + (qe - qb) + 1);
+			s->qual_ascii=malloc(qe + 1);
+			for (i = qe-1; i >= qb; --i){
+			    //str->s[str->l++] = s->qual[i];
+				s->qual_ascii[i] = s->qual[i];
+                    }
+			s->qual_ascii[qe] = 0;
+			//str->s[str->l] = 0;
+		} else {
+            //kputc('*', str);
+			s->qual_ascii=malloc(2);
+			s->qual_ascii[0] = '*';
+			s->qual_ascii[1] = '\0';
+        }
 	}
 
+    /*int qual_size = strlen(s->qual_ascii);
+    int seq_size = strlen(s->seq_ascii);
+	if(qual_size < 100) {
+        fprintf(stderr, "qual: <==============> %s \n", s->qual_ascii);
+        free(s->qual_ascii);
+        s->qual_ascii = malloc(2);
+        s->qual_ascii[0] = '*';
+		s->qual_ascii[1] = '\0';
+    }
+    if(seq_size < 100) {
+        fprintf(stderr, "seq: <==============> %s \n", s->seq_ascii);
+    	free(s->seq_ascii);
+         s->seq_ascii = malloc(2);
+        s->seq_ascii[0] = '*';
+		s->seq_ascii[1] = '\0';
+    }*/
+    kstring_t str2;
+    str2.l = str2.m = 0; str2.s = 0;
 	// print optional tags
-	if (p->n_cigar) {
-		kputsn("\tNM:i:", 6, str); kputw(p->NM, str);
-		kputsn("\tMD:Z:", 6, str); kputs((char*)(p->cigar + p->n_cigar), str);
+	if (p->n_cigar) {  // ... (12)
+		kputsn("\tNM:i:", 6, &str2); kputw(p->NM, &str2);
+		kputsn("\tMD:Z:", 6, &str2); kputs((char*)(p->cigar + p->n_cigar), &str2);
 	}
-	if (m && m->n_cigar) { kputsn("\tMC:Z:", 6, str); add_cigar(opt, m, str, which); }
-	if (p->score >= 0) { kputsn("\tAS:i:", 6, str); kputw(p->score, str); }
-	if (p->sub >= 0) { kputsn("\tXS:i:", 6, str); kputw(p->sub, str); }
-	if (bwa_rg_id[0]) { kputsn("\tRG:Z:", 6, str); kputs(bwa_rg_id, str); }
+	if (m && m->n_cigar) { kputsn("\tMC:Z:", 6, &str2); add_cigar(opt, m, &str2, which); }
+	if (p->score >= 0) { kputsn("\tAS:i:", 6, &str2); kputw(p->score, &str2); }
+	if (p->sub >= 0) { kputsn("\tXS:i:", 6, &str2); kputw(p->sub, &str2); }
+	if (bwa_rg_id[0]) { kputsn("\tRG:Z:", 6, &str2); kputs(bwa_rg_id, &str2); }
 	if (!(p->flag & 0x100)) { // not multi-hit
 		for (i = 0; i < n; ++i)
 			if (i != which && !(list[i].flag&0x100)) break;
 		if (i < n) { // there are other primary hits; output them
-			kputsn("\tSA:Z:", 6, str);
+			kputsn("\tSA:Z:", 6, &str2);
 			for (i = 0; i < n; ++i) {
 				const mem_aln_t *r = &list[i];
 				int k;
 				if (i == which || (r->flag&0x100)) continue; // proceed if: 1) different from the current; 2) not shadowed multi hit
-				kputs(bns->anns[r->rid].name, str); kputc(',', str);
-				kputl(r->pos+1, str); kputc(',', str);
-				kputc("+-"[r->is_rev], str); kputc(',', str);
+				kputs(bns->anns[r->rid].name, &str2); kputc(',', &str2);
+				kputl(r->pos+1, &str2); kputc(',', &str2);
+				kputc("+-"[r->is_rev], &str2); kputc(',', &str2);
 				for (k = 0; k < r->n_cigar; ++k) {
-					kputw(r->cigar[k]>>4, str); kputc("MIDSH"[r->cigar[k]&0xf], str);
+					kputw(r->cigar[k]>>4, &str2); kputc("MIDSH"[r->cigar[k]&0xf], &str2);
 				}
-				kputc(',', str); kputw(r->mapq, str);
-				kputc(',', str); kputw(r->NM, str);
-				kputc(';', str);
+				kputc(',', &str2); kputw(r->mapq, &str2);
+				kputc(',', &str2); kputw(r->NM, &str2);
+				kputc(';', &str2);
 			}
 		}
 		if (p->alt_sc > 0)
-			ksprintf(str, "\tpa:f:%.3f", (double)p->score / p->alt_sc);
+			ksprintf(&str2, "\tpa:f:%.3f", (double)p->score / p->alt_sc);
 	}
 	if (p->XA) {
-		kputsn((opt->flag&MEM_F_XB)? "\tXB:Z:" : "\tXA:Z:", 6, str);
-		kputs(p->XA, str);
+		kputsn((opt->flag&MEM_F_XB)? "\tXB:Z:" : "\tXA:Z:", 6, &str2);
+		kputs(p->XA, &str2);
 	}
-	if (s->comment) { kputc('\t', str); kputs(s->comment, str); }
+	if (s->comment) { kputc('\t', &str2); kputs(s->comment, &str2); }
 	if ((opt->flag&MEM_F_REF_HDR) && p->rid >= 0 && bns->anns[p->rid].anno != 0 && bns->anns[p->rid].anno[0] != 0) {
 		int tmp;
-		kputsn("\tXR:Z:", 6, str);
-		tmp = str->l;
-		kputs(bns->anns[p->rid].anno, str);
-		for (i = tmp; i < str->l; ++i) // replace TAB in the comment to SPACE
-			if (str->s[i] == '\t') str->s[i] = ' ';
+		kputsn("\tXR:Z:", 6, &str2);
+		tmp = str2.l;
+		kputs(bns->anns[p->rid].anno, &str2);
+		for (i = tmp; i < str2.l; ++i) // replace TAB in the comment to SPACE
+			if (str2.s[i] == '\t') str2.s[i] = ' ';
 	}
-	kputc('\n', str);
+	//kputc('\n', str);
+	s->tag = str2.s;
 }
-
 /************************
  * Integrated interface *
  ************************/
