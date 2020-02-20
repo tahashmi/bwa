@@ -5,7 +5,8 @@
 
 **Note: Apache Arrow Integration.**
 This forked repository contains some modifications to use in-memory Arrow data representation for SAM output from BWA-MEM. Instead of writing output to SAM ASCII file, SAM data is being written in-memory to be used in some other applications.
-*Changes*
+
+**Changes**
 Makefile -> Following libs included. -larrow-glib -lplasma-glib -lglib-2.0 -lgobject-2.0 -lgio-2.0
 main.c -> Some Arrow tables/plasma objects creation functions like create_plasma_object() added.
 fastmap.c -> Step-2 in process() has been changed.
