@@ -1,12 +1,16 @@
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
 #include <limits.h>
 #include <math.h>
+
+
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
+
 #include "kstring.h"
 #include "bwamem.h"
 
@@ -23,6 +27,7 @@
 #endif
 
 typedef char   gchar;
+
 
 /* Theory on probability and scoring *ungapped* alignment
  *
@@ -813,18 +818,38 @@ static inline int get_rlen(int n_cigar, const uint32_t *cigar)
 	return l;
 }
 
-static inline void add_cigar(const mem_opt_t *opt, mem_aln_t *p, kstring_t *str, int which)
+char * toCharArray(int number)
 {
-	int i;
-	if (p->n_cigar) { // aligned
-		for (i = 0; i < p->n_cigar; ++i) {
+    int n = log10(number) + 1;
+    int i;
+    char *numberArray = calloc(n, sizeof(char));
+    for ( i = 0; i < n; ++i, number /= 10 )
+    {
+        numberArray[i] = number % 10;
+    }
+    return numberArray;
+}
+
+static inline char* add_cigar(const mem_opt_t *opt, mem_aln_t *p, kstring_t *str, int which)
+{
+
+    if (p->n_cigar) { // aligned
+
+		for (int i = 0; i < p->n_cigar; ++i) {
 			int c = p->cigar[i]&0xf;
 			if (!(opt->flag&MEM_F_SOFTCLIP) && !p->is_alt && (c == 3 || c == 4))
 				c = which? 4 : 3; // use hard clipping for supplementary alignments
-			kputw(p->cigar[i]>>4, str); kputc("MIDSH"[c], str);
+			kputw(p->cigar[i]>>4, str);
+			kputc("MIDSH"[c], str);
 		}
-	} else kputc('*', str); // having a coordinate but unaligned (e.g. when copy_mate is true)
+	} else {
+        kputc('*', str);
+    }; // having a coordinate but unaligned (e.g. when copy_mate is true)
+
+    return str->s;
 }
+
+
 
 void mem_aln2sam(const mem_opt_t *opt, const bntseq_t *bns, kstring_t *str, bseq1_t *s, int n, const mem_aln_t *list, int which, const mem_aln_t *m_)
 {
@@ -983,7 +1008,7 @@ void mem_aln2sam(const mem_opt_t *opt, const bntseq_t *bns, kstring_t *str, bseq
         }
 	}
 
-    /*int qual_size = strlen(s->qual_ascii);
+	/*int qual_size = strlen(s->qual_ascii);
     int seq_size = strlen(s->seq_ascii);
 	if(qual_size < 100) {
         fprintf(stderr, "qual: <==============> %s \n", s->qual_ascii);
@@ -999,6 +1024,8 @@ void mem_aln2sam(const mem_opt_t *opt, const bntseq_t *bns, kstring_t *str, bseq
         s->seq_ascii[0] = '*';
 		s->seq_ascii[1] = '\0';
     }*/
+
+
     kstring_t str2;
     str2.l = str2.m = 0; str2.s = 0;
 	// print optional tags
@@ -1047,8 +1074,18 @@ void mem_aln2sam(const mem_opt_t *opt, const bntseq_t *bns, kstring_t *str, bseq
 			if (str2.s[i] == '\t') str2.s[i] = ' ';
 	}
 	//kputc('\n', str);
+
 	s->tag = str2.s;
+	//free(str2.s);
+    //free(str1.s);
+
+
+
+    //free(cigar_pass);
+    //free(cigarStr);
+
 }
+
 /************************
  * Integrated interface *
  ************************/
