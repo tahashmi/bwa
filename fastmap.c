@@ -15,6 +15,10 @@
 KSEQ_DECLARE(gzFile)
 
 extern unsigned char nst_nt4_table[256];
+int64_t counts1,counts2,counts3,counts4,counts5,counts5,counts6,counts7,counts8,counts9,counts10,counts11,
+        counts12,counts13,counts14,counts15,counts15,counts16,counts17,counts18,counts19,counts20,counts21,counts22,
+        countsX,countsY,countsM;
+
 
 void *kopen(const char *fn, int *_fd);
 int kclose(void *a);
