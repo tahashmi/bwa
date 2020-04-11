@@ -11,7 +11,7 @@ AOBJS=		bwashm.o bwase.o bwaseqio.o bwtgap.o bwtaln.o bamlite.o \
 			bwtsw2_core.o bwtsw2_main.o bwtsw2_aux.o bwt_lite.o \
 			bwtsw2_chain.o fastmap.o bwtsw2_pair.o
 PROG=		bwa
-INCLUDES=	
+INCLUDES=	-I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 LIBS=		-lm -lz -lpthread -larrow-glib -lplasma-glib -lglib-2.0 -lgobject-2.0 -lgio-2.0
 SUBDIRS=	.
 
