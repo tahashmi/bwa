@@ -27,6 +27,8 @@ typedef struct {
 	uint8_t  *mem;
 } bwaidx_t;
 
+typedef char   gchar;
+
 typedef struct {
 	int l_seq, id;
 	char *name, *comment, *seq, *qual, *sam;
