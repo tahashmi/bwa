@@ -30,6 +30,9 @@ typedef struct {
 typedef struct {
 	int l_seq, id;
 	char *name, *comment, *seq, *qual, *sam;
+
+    int flag, rID,beginPos, mapQ, rNextId, pNext, tLen;
+    gchar *refID, *cigar, *seq_ascii, *qual_ascii, *tag;
 } bseq1_t;
 
 extern int bwa_verbose;
