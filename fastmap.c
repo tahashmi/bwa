@@ -52,31 +52,11 @@ typedef struct {
 //		Arrow-Functionality                //
 /////////////////////////////////////////////////////
 ////////////////////////////////////////////////<feff>
-GArrowArray *array_qName1;
-GArrowArray *array_flag1;
-GArrowArray *array_rID1;
-GArrowArray *array_beginPos1;
-GArrowArray *array_mapQ1;
-GArrowArray *array_cigar1;
-GArrowArray *array_rNextId1;
-GArrowArray *array_pNext1;
-GArrowArray *array_tLen1;
-GArrowArray *array_seq1;
-GArrowArray *array_qual1;
-GArrowArray *array_tags1;
+GArrowArray *array_qName1, *array_flag1, *array_rID1, *array_beginPos1, *array_mapQ1, *array_cigar1, *array_rNextId1, *array_pNext1, *array_tLen1, *array_seq1, *array_qual1, *array_tags1;
 
-GArrowStringArrayBuilder *builder_qName1;
-GArrowInt32ArrayBuilder *builder_flag1;
-GArrowInt32ArrayBuilder *builder_rID1;
-GArrowInt32ArrayBuilder *builder_beginPos1;
-GArrowInt32ArrayBuilder *builder_mapQ1;
-GArrowStringArrayBuilder *builder_cigar1;
-GArrowInt32ArrayBuilder *builder_rNextId1;
-GArrowInt32ArrayBuilder *builder_pNext1;
-GArrowInt32ArrayBuilder *builder_tLen1;
-GArrowStringArrayBuilder *builder_seq1;
-GArrowStringArrayBuilder *builder_qual1;
-GArrowStringArrayBuilder *builder_tags1;
+GArrowStringArrayBuilder *builder_qName1, *builder_cigar1, *builder_seq1, *builder_qual1, *builder_tags1;
+GArrowInt32ArrayBuilder *builder_flag1, *builder_rID1, *builder_beginPos1, *builder_mapQ1, *builder_rNextId1, *builder_pNext1,builder_tLen1;
+
 ////////////////////////////////////////////////
 gboolean
 arrow_builders_append(gint32 builder_id, const gchar *qName, gint32 flag, gint32 rID, gint32 beginPos, gint32 mapQ, const gchar *cigar, gint32 rNextId, gint32 pNext, gint32 tLen, const gchar *seq, const gchar *qual, const gchar *tags)
