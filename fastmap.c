@@ -51,6 +51,232 @@ typedef struct {
 /////////////////////////////////////////////////////
 //		Arrow-Functionality                //
 /////////////////////////////////////////////////////
+////////////////////////////////////////////////<feff>
+GArrowArray *array_qName1;
+GArrowArray *array_flag1;
+GArrowArray *array_rID1;
+GArrowArray *array_beginPos1;
+GArrowArray *array_mapQ1;
+GArrowArray *array_cigar1;
+GArrowArray *array_rNextId1;
+GArrowArray *array_pNext1;
+GArrowArray *array_tLen1;
+GArrowArray *array_seq1;
+GArrowArray *array_qual1;
+GArrowArray *array_tags1;
+
+GArrowStringArrayBuilder *builder_qName1;
+GArrowInt32ArrayBuilder *builder_flag1;
+GArrowInt32ArrayBuilder *builder_rID1;
+GArrowInt32ArrayBuilder *builder_beginPos1;
+GArrowInt32ArrayBuilder *builder_mapQ1;
+GArrowStringArrayBuilder *builder_cigar1;
+GArrowInt32ArrayBuilder *builder_rNextId1;
+GArrowInt32ArrayBuilder *builder_pNext1;
+GArrowInt32ArrayBuilder *builder_tLen1;
+GArrowStringArrayBuilder *builder_seq1;
+GArrowStringArrayBuilder *builder_qual1;
+GArrowStringArrayBuilder *builder_tags1;
+////////////////////////////////////////////////
+gboolean
+arrow_builders_append(gint32 builder_id, const gchar *qName, gint32 flag, gint32 rID, gint32 beginPos, gint32 mapQ, const gchar *cigar, gint32 rNextId, gint32 pNext, gint32 tLen, const gchar *seq, const gchar *qual, const gchar *tags)
+    {
+        gboolean success = TRUE;
+        GError *error = NULL;
+
+        if(builder_id == 1) {
+            if (success) {
+                success = garrow_string_array_builder_append(builder_qName1, qName, &error);
+            }
+            if (success) {
+                success = garrow_int32_array_builder_append(builder_flag1, flag, &error);
+            }
+            if (success) {
+                success = garrow_int32_array_builder_append(builder_rID1, rID, &error);
+            }
+            if (success) {
+                success = garrow_int32_array_builder_append(builder_beginPos1, beginPos, &error);
+            }
+            if (success) {
+                success = garrow_int32_array_builder_append(builder_mapQ1, mapQ, &error);
+            }
+
+            if (success) {
+                success = garrow_string_array_builder_append(builder_cigar1, cigar, &error);
+            }
+
+            if (success) {
+                success = garrow_int32_array_builder_append(builder_rNextId1, rNextId, &error);
+            }
+            if (success) {
+                success = garrow_int32_array_builder_append(builder_pNext1, pNext, &error);
+            }
+            if (success) {
+                success = garrow_int32_array_builder_append(builder_tLen1, tLen, &error);
+            }
+
+            if (success) {
+                success = garrow_string_array_builder_append(builder_seq1, seq, &error);
+            }
+            if (success) {
+                success = garrow_string_array_builder_append(builder_qual1, qual, &error);
+            }
+            if (success) {
+                success = garrow_string_array_builder_append(builder_tags1, tags, &error);
+            }
+                                                                                                                                                    150,9         24%
+	}
+}
+///////////////////////////////////////////////////////////////
+GArrowSchema* getSchema(void)
+{
+    GArrowSchema *schema;
+    //RecordBatch creation
+    GArrowField *f0 = garrow_field_new("qNames", GARROW_DATA_TYPE(garrow_string_data_type_new()));
+    GArrowField *f1 = garrow_field_new("flags", GARROW_DATA_TYPE(garrow_int32_data_type_new()));
+    GArrowField *f2 = garrow_field_new("rIDs", GARROW_DATA_TYPE(garrow_int32_data_type_new()));
+    GArrowField *f3 = garrow_field_new("beginPoss", GARROW_DATA_TYPE(garrow_int32_data_type_new()));
+    GArrowField *f4 = garrow_field_new("mapQs", GARROW_DATA_TYPE(garrow_int32_data_type_new()));
+    GArrowField *f11 = garrow_field_new("cigars", GARROW_DATA_TYPE(garrow_string_data_type_new()));
+    GArrowField *f5 = garrow_field_new("rNextIds", GARROW_DATA_TYPE(garrow_int32_data_type_new()));
+    GArrowField *f6 = garrow_field_new("pNexts", GARROW_DATA_TYPE(garrow_int32_data_type_new()));
+    GArrowField *f7 = garrow_field_new("tLens", GARROW_DATA_TYPE(garrow_int32_data_type_new()));
+    GArrowField *f8 = garrow_field_new("seqs", GARROW_DATA_TYPE(garrow_string_data_type_new()));
+    GArrowField *f9 = garrow_field_new("quals", GARROW_DATA_TYPE(garrow_string_data_type_new()));
+    GArrowField *f10 = garrow_field_new("tagss", GARROW_DATA_TYPE(garrow_string_data_type_new()));
+
+    GList *fields = NULL;
+    fields = g_list_append(fields, f0);
+    fields = g_list_append(fields, f1);
+    fields = g_list_append(fields, f2);
+    fields = g_list_append(fields, f3);
+    fields = g_list_append(fields, f4);
+    fields = g_list_append(fields, f11);
+    fields = g_list_append(fields, f5);
+    fields = g_list_append(fields, f6);
+    fields = g_list_append(fields, f7);
+    fields = g_list_append(fields, f8);
+    fields = g_list_append(fields, f9);
+    fields = g_list_append(fields, f10);
+//Create schema and free unnecessary fields
+    schema = garrow_schema_new(fields);
+    g_list_free(fields);
+    g_object_unref(f0);
+    g_object_unref(f1);
+    g_object_unref(f2);
+    g_object_unref(f3);
+    g_object_unref(f4);
+    g_object_unref(f11);
+    g_object_unref(f5);
+    g_object_unref(f6);
+    g_object_unref(f7);
+    g_object_unref(f8);
+    g_object_unref(f9);
+    g_object_unref(f10);
+
+    return schema;
+}
+/////////////////////////////////////////////////
+GArrowRecordBatch * create_arrow_record_batch(gint64 count, GArrowArray *array_qName,GArrowArray *array_flag,GArrowArray *array_rID,GArrowArray *array_beginPos,GArrowArray *array_mapQ,
+GArrowArray *array_cigar,GArrowArray *array_rNextId,GArrowArray *array_pNext,GArrowArray *array_tLen,GArrowArray *array_seq,GArrowArray *array_qual,GArrowArray *array_tags)
+{
+    GArrowSchema *schema;
+    GArrowRecordBatch *batch_genomics;
+
+    schema = getSchema();
+
+    GList *columns_genomics;
+    columns_genomics = g_list_append(columns_genomics,array_qName);
+    columns_genomics = g_list_append(columns_genomics,array_flag);
+    columns_genomics = g_list_append(columns_genomics,array_rID);
+    columns_genomics = g_list_append(columns_genomics,array_beginPos);
+    columns_genomics = g_list_append(columns_genomics,array_mapQ);
+    columns_genomics = g_list_append(columns_genomics,array_cigar);
+    columns_genomics = g_list_append(columns_genomics,array_rNextId);
+    columns_genomics = g_list_append(columns_genomics,array_pNext);
+    columns_genomics = g_list_append(columns_genomics,array_tLen);
+    columns_genomics = g_list_append(columns_genomics,array_seq);
+    columns_genomics = g_list_append(columns_genomics,array_qual);
+    columns_genomics = g_list_append(columns_genomics,array_tags);
+
+    batch_genomics = garrow_record_batch_new(schema,count,columns_genomics,NULL);
+    g_list_free(columns_genomics);
+
+    return batch_genomics;
+}
+
+
+
+void arrow_builders_start(void)
+{
+  builder_qName1 = garrow_string_array_builder_new();
+  builder_flag1 = garrow_int32_array_builder_new();
+  builder_rID1 = garrow_int32_array_builder_new();
+  builder_beginPos1 = garrow_int32_array_builder_new();
+  builder_mapQ1 = garrow_int32_array_builder_new();
+
+  builder_cigar1 = garrow_string_array_builder_new();
+
+  builder_rNextId1 = garrow_int32_array_builder_new();
+  builder_pNext1 = garrow_int32_array_builder_new();
+  builder_tLen1 = garrow_int32_array_builder_new();
+
+  builder_seq1 = garrow_string_array_builder_new();
+  builder_qual1 = garrow_string_array_builder_new();
+  builder_tags1 = garrow_string_array_builder_new();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+GArrowRecordBatch *
+arrow_builders_finish(gint32 builder_id, gint64 count)
+{
+ GError *error = NULL;
+ GArrowRecordBatch *batch_genomics;
+    if(builder_id == 1) {
+        array_qName1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_qName1), &error);
+        array_flag1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_flag1), &error);
+        array_rID1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_rID1), &error);
+        array_beginPos1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_beginPos1), &error);
+        array_mapQ1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_mapQ1), &error);
+        array_cigar1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_cigar1), &error);
+        array_rNextId1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_rNextId1), &error);
+        array_pNext1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_pNext1), &error);
+        array_tLen1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_tLen1), &error);
+        array_seq1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_seq1), &error);
+        array_qual1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_qual1), &error);
+        array_tags1 = garrow_array_builder_finish(GARROW_ARRAY_BUILDER(builder_tags1), &error);
+
+        g_object_unref(builder_qName1);
+        g_object_unref(builder_flag1);
+        g_object_unref(builder_rID1);
+        g_object_unref(builder_beginPos1);
+        g_object_unref(builder_mapQ1);
+        g_object_unref(builder_cigar1);
+        g_object_unref(builder_rNextId1);
+        g_object_unref(builder_pNext1);
+        g_object_unref(builder_tLen1);
+        g_object_unref(builder_seq1);
+        g_object_unref(builder_qual1);
+        g_object_unref(builder_tags1);
+
+        batch_genomics = create_arrow_record_batch(count, array_qName1,array_flag1,array_rID1,array_beginPos1,array_mapQ1,
+                                         array_cigar1,array_rNextId1,array_pNext1,array_tLen1,array_seq1,array_qual1,array_tags1);
+ g_object_unref(array_qName1);
+        g_object_unref(array_flag1);
+        g_object_unref(array_rID1);
+        g_object_unref(array_beginPos1);
+        g_object_unref(array_mapQ1);
+        g_object_unref(array_cigar1);
+        g_object_unref(array_rNextId1);
+        g_object_unref(array_pNext1);
+        g_object_unref(array_tLen1);
+        g_object_unref(array_seq1);
+        g_object_unref(array_qual1);
+        g_object_unref(array_tags1);
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 char* generateRandomString(int size) {
     int i;
     char *res = malloc(size + 1);
