@@ -116,7 +116,7 @@ int exist(const char *name)
 {
     struct stat   buffer;
     return (stat (name, &buffer) == 0);
-}*/
+}
 ////////////////////////END////////////////////////////
 	
 static void *process(void *shared, int step, void *_data)
