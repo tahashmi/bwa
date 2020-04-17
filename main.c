@@ -12,7 +12,7 @@
 #ifndef PACKAGE_VERSION
 #define PACKAGE_VERSION "0.7.17-r1198-dirty"
 #endif
-
+/*c-1
 #define ASCII_START 32
 #define ASCII_END 126
 
@@ -20,7 +20,7 @@ typedef char   gchar;
 extern int64_t counts1,counts2,counts3,counts4,counts5,counts5,counts6,counts7,counts8,counts9,counts10,counts11,
         counts12,counts13,counts14,counts15,counts15,counts16,counts17,counts18,counts19,counts20,counts21,counts22,
         countsX,countsY,countsM;
-
+*/
 int bwa_fa2pac(int argc, char *argv[]);
 int bwa_pac2bwt(int argc, char *argv[]);
 int bwa_bwtupdate(int argc, char *argv[]);
@@ -71,7 +71,7 @@ static int usage()
 "      first. Please `man ./bwa.1' for the manual.\n\n");
 	return 1;
 }
-
+/*c-1
 /////////////////////////////////////////////////////
 //		Arrow-Functionality                //
 /////////////////////////////////////////////////////
@@ -119,8 +119,7 @@ void create_plasma_object(GArrowRecordBatch *batch_genomics)
     object_id = gplasma_object_id_new(id_arr, 20, &error);
 
     {
-        /* It should be guint8 instead of gchar. We use gchar here
-           just for convenient. */
+        // It should be guint8 instead of gchar. We use gchar here just for convenient. 
         guint8 metadata[] = "metadata";
         gplasma_client_create_options_set_metadata(create_options, (const guint8 *)metadata, sizeof(metadata));
     }
@@ -156,7 +155,7 @@ int exist(const char *name)
 {
     struct stat   buffer;
     return (stat (name, &buffer) == 0);
-}
+}*/
 ////////////////////////END////////////////////////////
 
 int main(int argc, char *argv[])
@@ -166,10 +165,11 @@ int main(int argc, char *argv[])
 	double t_real;
 	kstring_t pg = {0,0,0};
 	
+	/*c-1
 	char file[] = "objID.txt";
         if(exist(file))
           remove(file);
-        arrow_builders_start();
+        arrow_builders_start();*/
 	
 	t_real = realtime();
 	ksprintf(&pg, "@PG\tID:bwa\tPN:bwa\tVN:%s\tCL:%s", PACKAGE_VERSION, argv[0]);
@@ -208,6 +208,7 @@ int main(int argc, char *argv[])
 	}
 	free(bwa_pg);
 	
+	/*c-1
 	arrow_plasma_create(1,counts1); //Chrms
 	arrow_plasma_create(2,counts2);
 	arrow_plasma_create(3,counts3);
@@ -232,7 +233,7 @@ int main(int argc, char *argv[])
 	arrow_plasma_create(22,counts22);
 	arrow_plasma_create(23,countsX);
 	arrow_plasma_create(24,countsY);
-	arrow_plasma_create(25,countsM);
+	arrow_plasma_create(25,countsM);*/
 	
 	return ret;
 }
