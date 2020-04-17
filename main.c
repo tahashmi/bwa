@@ -165,11 +165,11 @@ int main(int argc, char *argv[])
 	double t_real;
 	kstring_t pg = {0,0,0};
 	
-	/*c-1
+	
 	char file[] = "objID.txt";
         if(exist(file))
           remove(file);
-        arrow_builders_start();*/
+        /*c-1arrow_builders_start();*/
 	
 	t_real = realtime();
 	ksprintf(&pg, "@PG\tID:bwa\tPN:bwa\tVN:%s\tCL:%s", PACKAGE_VERSION, argv[0]);
