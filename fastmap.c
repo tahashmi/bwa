@@ -414,7 +414,7 @@ static void *process(void *shared, int step, void *_data)
                 //arrow_builders_append("FLAG",555,999,888,777, "A1B2C3",111,222,333, "SEQ","QUAL","TAGS");
                 counts1++;
 			}
-			else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr2")==0) && (qual_size == 100) && (seq_size== 100)) {
+			/*else if ((data->seqs[i].sam) && (strcmp(data->seqs[i].refID, "chr2")==0) && (qual_size == 100) && (seq_size== 100)) {
                 arrow_builders_append(2, data->seqs[i].name, data->seqs[i].flag, 2, data->seqs[i].beginPos,
                                       data->seqs[i].mapQ, data->seqs[i].cigar, data->seqs[i].rNextId,
                                       data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
@@ -581,7 +581,7 @@ static void *process(void *shared, int step, void *_data)
                                       data->seqs[i].pNext, data->seqs[i].tLen, data->seqs[i].seq_ascii,
                                       data->seqs[i].qual_ascii, data->seqs[i].tag);
                 countsM++;
-            }
+            }*/
 			free(data->seqs[i].name); free(data->seqs[i].comment);
 			free(data->seqs[i].seq); free(data->seqs[i].qual); free(data->seqs[i].sam);
 
@@ -598,7 +598,7 @@ static void *process(void *shared, int step, void *_data)
 			free(data->seqs[i].tag);
 			
 		arrow_plasma_create(1,counts1); //Chrms
-		arrow_plasma_create(2,counts2);
+		/*arrow_plasma_create(2,counts2);
 		arrow_plasma_create(3,counts3);
 		arrow_plasma_create(4,counts4);
 		arrow_plasma_create(5,counts5);
@@ -621,7 +621,7 @@ static void *process(void *shared, int step, void *_data)
 		arrow_plasma_create(22,counts22);
 		arrow_plasma_create(23,countsX);
 		arrow_plasma_create(24,countsY);
-		arrow_plasma_create(25,countsM);
+		arrow_plasma_create(25,countsM);*/
 			
 		}
 		free(data->seqs); free(data);
