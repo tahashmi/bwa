@@ -12,6 +12,10 @@
 #include "utils.h"
 #include "bntseq.h"
 #include "kseq.h"
+
+#include <arrow-glib/arrow-glib.h>
+#include <plasma-glib/plasma-glib.h>
+
 KSEQ_DECLARE(gzFile)
 
 #define ASCII_START 32
