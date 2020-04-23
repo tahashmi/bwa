@@ -6,6 +6,10 @@
 #include <limits.h>
 #include <ctype.h>
 #include <math.h>
+
+#include <arrow-glib/arrow-glib.h>
+#include <gmodule.h>
+
 #include "bwa.h"
 #include "bwamem.h"
 #include "kvec.h"
